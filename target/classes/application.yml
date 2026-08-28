@@ -1,0 +1,52 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: codearena-backend
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:codearena}?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      # 'validate' in real prod once Flyway/Liquibase owns schema; 'update' is fine while iterating.
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    open-in-view: false
+
+  jackson:
+    default-property-inclusion: non_null
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
+app:
+  jwt:
+    # In production this MUST come from an env var / secrets manager, never committed.
+    secret: ${JWT_SECRET:fcf46bf87531069e4f464f30d6ecb1c6a14718dc75a1c12389e8dee287a3dade}
+    access-token-expiration-ms: ${JWT_ACCESS_EXP:3600000}      # 1 hour
+    refresh-token-expiration-ms: ${JWT_REFRESH_EXP:604800000}  # 7 days
+  bootstrap-admin:
+    # First admin account, created once by DataInitializer if no user with
+    # this username exists yet. Override all three in production and
+    # rotate the password immediately after first login.
+    username: ${ADMIN_USERNAME:admin}
+    email: ${ADMIN_EMAIL:admin@codearena.local}
+    password: ${ADMIN_PASSWORD:Admin@12345}
+
+logging:
+  level:
+    com.codearena: DEBUG
+    org.springframework.security: INFO

@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:codearena_test;DB_CLOSE_DELAY=-1;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+app:
+  jwt:
+    secret: "fcf46bf87531069e4f464f30d6ecb1c6a14718dc75a1c12389e8dee287a3dade"
+    access-token-expiration-ms: 3600000
+    refresh-token-expiration-ms: 604800000
