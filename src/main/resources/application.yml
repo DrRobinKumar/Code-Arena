@@ -1,0 +1,65 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: codearena-backend
+
+  datasource:
+    # allowPublicKeyRetrieval=true is required for MySQL 8's default
+    # caching_sha2_password auth plugin to work over a non-SSL connection
+    # (the default for local dev) — without it, connecting fails with
+    # "Public Key Retrieval is not allowed".
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:codearena}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      # 'validate' in real prod once Flyway/Liquibase owns schema; 'update' is fine while iterating.
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    open-in-view: false
+
+  jackson:
+    default-property-inclusion: non_null
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
+app:
+  jwt:
+    # In production this MUST come from an env var / secrets manager, never committed.
+    secret: ${JWT_SECRET:fcf46bf87531069e4f464f30d6ecb1c6a14718dc75a1c12389e8dee287a3dade}
+    access-token-expiration-ms: ${JWT_ACCESS_EXP:3600000}      # 1 hour
+    refresh-token-expiration-ms: ${JWT_REFRESH_EXP:604800000}  # 7 days
+  bootstrap-admin:
+    # First admin account, created once by DataInitializer if no user with
+    # this username exists yet. Override all three in production and
+    # rotate the password immediately after first login.
+    username: ${ADMIN_USERNAME:admin}
+    email: ${ADMIN_EMAIL:admin@codearena.local}
+    password: ${ADMIN_PASSWORD:Admin@12345}
+  judge0:
+    # Point this at either a self-hosted Judge0 CE instance
+    # (e.g. http://localhost:2358, no auth needed) or a RapidAPI-hosted one
+    # (e.g. https://judge0-ce.p.rapidapi.com, with the two keys below set).
+    base-url: ${JUDGE0_BASE_URL:http://localhost:2358}
+    rapidapi-key: ${JUDGE0_RAPIDAPI_KEY:}
+    rapidapi-host: ${JUDGE0_RAPIDAPI_HOST:}
+    poll-interval-ms: ${JUDGE0_POLL_INTERVAL_MS:1000}
+    max-poll-attempts: ${JUDGE0_MAX_POLL_ATTEMPTS:10}
+
+logging:
+  level:
+    com.codearena: DEBUG
+    org.springframework.security: INFO

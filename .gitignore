@@ -1,0 +1,10 @@
+target/
+.idea/
+.vscode/
+*.iml
+*.class
+
+# Local environment and secrets
+.env
+application-local.yml
+application-*.local.yml
